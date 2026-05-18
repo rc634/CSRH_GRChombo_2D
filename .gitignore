@@ -1,0 +1,83 @@
+# =========================
+# Build artifacts
+# =========================
+build/
+Build/
+bin/
+Binaries/
+*.o
+*.lo
+*.la
+*.a
+*.so
+*.d
+*.mod
+*.exe
+
+# CMake (if used)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+
+# =========================
+# Simulation outputs (VERY important for GRChombo)
+# =========================
+*.h5
+*.dat
+*.hdf5
+*.vtk
+*.plt
+*.out
+*.log
+
+output/
+outputs/
+results/
+restart/
+checkpoints/
+chk/
+plot/
+
+# AMR / checkpoint files (common in GRChombo runs)
+*.chk
+*.checkpoint
+*.hdf5.*
+
+# =========================
+# HPC / cluster junk
+# =========================
+slurm-*.out
+slurm-*.err
+*.pbs.*
+*.job.*
+*.err
+*.out.*
+
+# =========================
+# Python (if analysis scripts exist)
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# =========================
+# Editors / OS files
+# =========================
+*~
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# =========================
+# Large data (optional but recommended)
+# =========================
+*.dat.*
+*.raw
+*.bin
