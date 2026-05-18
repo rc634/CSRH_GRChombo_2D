@@ -1,0 +1,721 @@
+Parameter: max_spatial_derivative_order not found in parameter file. It has been set to its default value = 4.
+Parameter: num_ghosts not found in parameter file. It has been set to its default value = 3.
+Parameter: tag_buffer_size not found in parameter file. It has been set to its default value = 3.
+Parameter: fill_ratio not found in parameter file. It has been set to its default value = 0.7.
+Parameter: num_extrapolating_vars not found in parameter file. It has been set to its default value = -1.
+You are using non periodic boundary conditions.
+The boundary params chosen are:  
+---------------------------------
+- Sommerfeld boundaries in direction high 0
+The non zero asymptotic values of the variables in this direction are : 
+chi = 1    h11 = 1    h22 = 1    hww = 1    lapse = 1    
+
+- Sommerfeld boundaries in direction low 0
+The non zero asymptotic values of the variables in this direction are : 
+chi = 1    h11 = 1    h22 = 1    hww = 1    lapse = 1    
+
+- Sommerfeld boundaries in direction high 1
+The non zero asymptotic values of the variables in this direction are : 
+chi = 1    h11 = 1    h22 = 1    hww = 1    lapse = 1    
+
+- Reflective boundaries in direction low 1
+The variables that are parity odd in this direction are : 
+h12    A12    Gamma2    shift2    B2    Mom2    Weyl4_Im    dA12    
+
+---------------------------------
+Parameter: ignore_checkpoint_name_mismatch not found in parameter file. It has been set to its default value = 0.
+Using single regrid threshold.
+Parameter: max_steps not found in parameter file. It has been set to its default value = 1000000.
+Parameter: write_plot_ghosts not found in parameter file. It has been set to its default value = 0.
+Parameter: min_chi not found in parameter file. It has been set to its default value = 0.0001.
+Parameter: min_lapse not found in parameter file. It has been set to its default value = 0.0001.
+Parameter: num_points_theta incompatible with Simpson's rule so increased by 1.
+Parameter: integral_file_prefix not found in parameter file. It has been set to its default value = Weyl4_mode_.
+Star A is at x-position 32
+Star A is at y-position 32
+Parameter: tag_radius_A not found in parameter file. It has been set to its default value = 4.
+Parameter: star_radius not found in parameter file. It has been set to its default value = 4.
+Parameter: star_mass not found in parameter file. It has been set to its default value = 4.
+Parameter: tag_buffer not found in parameter file. It has been set to its default value = 0.5.
+Parameter: tag_puncture_max_level not found in parameter file. It has been set to its default value = 1.
+Parameter: threshold_chi not found in parameter file. It has been set to its default value = 1.
+
+ Initialising the coordinate number 0 for star 0 at 32
+
+
+ Initialising the coordinate number 1 for star 0 at 32
+
+Parameter: max_spatial_derivative_order not found in parameter file. It has been set to its default value = 4.
+Parameter: num_ghosts not found in parameter file. It has been set to its default value = 3.
+Parameter: tag_buffer_size not found in parameter file. It has been set to its default value = 3.
+Parameter: fill_ratio not found in parameter file. It has been set to its default value = 0.7.
+Parameter: num_extrapolating_vars not found in parameter file. It has been set to its default value = -1.
+You are using non periodic boundary conditions.
+The boundary params chosen are:  
+---------------------------------
+- Sommerfeld boundaries in direction high 0
+The non zero asymptotic values of the variables in this direction are : 
+chi = 1    h11 = 1    h22 = 1    hww = 1    lapse = 1    
+
+- Sommerfeld boundaries in direction low 0
+The non zero asymptotic values of the variables in this direction are : 
+chi = 1    h11 = 1    h22 = 1    hww = 1    lapse = 1    
+
+- Sommerfeld boundaries in direction high 1
+The non zero asymptotic values of the variables in this direction are : 
+chi = 1    h11 = 1    h22 = 1    hww = 1    lapse = 1    
+
+- Reflective boundaries in direction low 1
+The variables that are parity odd in this direction are : 
+h12    A12    Gamma2    shift2    B2    Mom2    Weyl4_Im    dA12    
+
+---------------------------------
+Parameter: ignore_checkpoint_name_mismatch not found in parameter file. It has been set to its default value = 0.
+Using single regrid threshold.
+Parameter: max_steps not found in parameter file. It has been set to its default value = 1000000.
+Parameter: write_plot_ghosts not found in parameter file. It has been set to its default value = 0.
+GRAMRLevel constructor
+GRAMRLevel::define 0
+GRAMRLevel constructor
+GRAMRLevel::define 1
+GRAMRLevel::initialGrid 0
+GRAMRLevel::::loadBalance
+ThinShell2DLevel::initialData 0
+BosonStarLevel::initialData & compute_1d_solution 0
+Wooo I have read the spinning BS initial data!
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::tagCells 0
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::initialGrid 0
+GRAMRLevel::::loadBalance
+GRAMRLevel::initialGrid 1
+GRAMRLevel::::loadBalance
+ThinShell2DLevel::initialData 0
+BosonStarLevel::initialData & compute_1d_solution 0
+Wooo I have read the spinning BS initial data!
+GRAMRLevel::fillAllEvolutionGhosts
+ThinShell2DLevel::initialData 1
+BosonStarLevel::initialData & compute_1d_solution 1
+Wooo I have read the spinning BS initial data!
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::computeInitialDt 0
+GRAMRLevel::computeInitialDt 1
+GRAMRLevel::fillAllEvolutionGhosts
+BinaryBSLevel::specificPostTimeStep: Extracting gravitational waves.
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 2 components
+    Summary: 2 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 3 components
+    Summary: 3 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+G_phi_phi 2.48696e+303
+Beta_sq 2.48696e+303
+GRAMRLevel::fillAllEvolutionGhosts
+Running a star tracker now
+Completed setting the points for the star 
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 1 components
+    Summary: 1 datasets at 7 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+Completed interpolating 
+Completed setting the points for the star 
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 1 components
+    Summary: 1 datasets at 7 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+Completed interpolating 
+Updated centres here also 
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 3 components
+    Summary: 3 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+G_phi_phi 80189.6
+Beta_sq 0
+GRAMRLevel::writeCheckpointHeader
+num_components :22
+component_0 :chi
+component_1 :h11
+component_10 :Theta
+component_11 :Gamma1
+component_12 :Gamma2
+component_13 :lapse
+component_14 :shift1
+component_15 :shift2
+component_16 :B1
+component_17 :B2
+component_18 :phi
+component_19 :phi_Im
+component_2 :h12
+component_20 :Pi
+component_21 :Pi_Im
+component_3 :h22
+component_4 :hww
+component_5 :K
+component_6 :A11
+component_7 :A12
+component_8 :A22
+component_9 :Aww
+
+GRAMRLevel::writeCheckpointLevel
+dt :0.5
+dx :2
+time :0
+is_periodic_0 :0
+is_periodic_1 :0
+ref_ratio :2
+tag_buffer_size :3
+prob_domain :((0,0) (31,31) (0,0))
+
+GRAMRLevel::writeCheckpointLevel
+dt :0.25
+dx :1
+time :0
+is_periodic_0 :0
+is_periodic_1 :0
+ref_ratio :2
+tag_buffer_size :3
+prob_domain :((0,0) (63,63) (0,0))
+
+GRAMRLevel::writePlotHeader
+num_components :19
+component_0 :mod_phi
+component_1 :K
+component_10 :Pi_Im
+component_11 :shift1
+component_12 :shift2
+component_13 :lapse
+component_14 :A11
+component_15 :A12
+component_16 :A22
+component_17 :Aww
+component_18 :hww
+component_2 :Ham
+component_3 :Mom1
+component_4 :rho
+component_5 :chi
+component_6 :h11
+component_7 :h22
+component_8 :h12
+component_9 :Pi
+
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::writePlotLevel
+dt :0.5
+dx :2
+time :0
+is_periodic_0 :0
+is_periodic_1 :0
+ref_ratio :2
+tag_buffer_size :3
+prob_domain :((0,0) (31,31) (0,0))
+
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::writePlotLevel
+dt :0.25
+dx :1
+time :0
+is_periodic_0 :0
+is_periodic_1 :0
+ref_ratio :2
+tag_buffer_size :3
+prob_domain :((0,0) (63,63) (0,0))
+
+GRAMRLevel::advance level 0 at time 0 (0 M/hr). Boxes on this rank: 4 / 4
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::computeDt 0
+GRAMRLevel::advance level 1 at time 0 (0 M/hr). Boxes on this rank: 4 / 4
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::computeDt 1
+GRAMRLevel::postTimeStep 1
+GRAMRLevel::fillAllEvolutionGhosts
+BinaryBSLevel::specificPostTimeStep: Extracting gravitational waves.
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 2 components
+    Summary: 2 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 3 components
+    Summary: 3 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+G_phi_phi 80189.9
+Beta_sq 3.51507e-13
+GRAMRLevel::postTimeStep 1 finished
+GRAMRLevel::advance level 1 at time 0.25 (26.4831 M/hr). Boxes on this rank: 4 / 4
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::computeDt 1
+GRAMRLevel::postTimeStep 1
+GRAMRLevel::fillAllEvolutionGhosts
+BinaryBSLevel::specificPostTimeStep: Extracting gravitational waves.
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 2 components
+    Summary: 2 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 3 components
+    Summary: 3 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+G_phi_phi 80190.6
+Beta_sq 5.75571e-12
+GRAMRLevel::postTimeStep 1 finished
+GRAMRLevel::postTimeStep 0
+GRAMRLevel::fillAllEvolutionGhosts
+Running a star tracker now
+Completed setting the points for the star 
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 1 components
+    Summary: 1 datasets at 7 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+Completed interpolating 
+Completed setting the points for the star 
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 1 components
+    Summary: 1 datasets at 7 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+Completed interpolating 
+Updated centres here also 
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 3 components
+    Summary: 3 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+G_phi_phi 80190.7
+Beta_sq 5.91007e-12
+GRAMRLevel::postTimeStep 0 finished
+coarse time step   0  old time = 0.000000e+00  old dt = 5.000000e-01  wallclocktime = 1.05e+00
+GRAMRLevel::advance level 0 at time 0.5 (52.1095 M/hr). Boxes on this rank: 4 / 4
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::computeDt 0
+GRAMRLevel::advance level 1 at time 0.5 (52.0943 M/hr). Boxes on this rank: 4 / 4
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::computeDt 1
+GRAMRLevel::postTimeStep 1
+GRAMRLevel::fillAllEvolutionGhosts
+BinaryBSLevel::specificPostTimeStep: Extracting gravitational waves.
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 2 components
+    Summary: 2 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 3 components
+    Summary: 3 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+G_phi_phi 80191.9
+Beta_sq 3.36104e-11
+GRAMRLevel::postTimeStep 1 finished
+GRAMRLevel::advance level 1 at time 0.75 (77.1251 M/hr). Boxes on this rank: 4 / 4
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::evalRHS
+GRAMRLevel::computeDt 1
+GRAMRLevel::postTimeStep 1
+GRAMRLevel::fillAllEvolutionGhosts
+BinaryBSLevel::specificPostTimeStep: Extracting gravitational waves.
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 2 components
+    Summary: 2 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 3 components
+    Summary: 3 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+G_phi_phi 80193.5
+Beta_sq 1.31372e-10
+GRAMRLevel::postTimeStep 1 finished
+GRAMRLevel::postTimeStep 0
+GRAMRLevel::fillAllEvolutionGhosts
+Running a star tracker now
+Completed setting the points for the star 
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 1 components
+    Summary: 1 datasets at 7 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+Completed interpolating 
+Completed setting the points for the star 
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 1 components
+    Summary: 1 datasets at 7 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+Completed interpolating 
+Updated centres here also 
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+GRAMRLevel::fillAllDiagnosticsGhosts
+[32;1m[AMRInterpolator][0m [32;1mInterpolating data[0m
+    This rank is querying for interpolated D(0,0) data for 3 components
+    Summary: 3 datasets at 218 points
+[32;1m[AMRInterpolator][0m Entering computeLevelLayouts
+[32;1m[AMRInterpolator][0m Leaving computeLevelLayouts
+[32;1m[AMRInterpolator][0m Entering findBoxes
+    All points have been found
+[32;1m[AMRInterpolator][0m Leaving findBoxes
+[32;1m[AMRInterpolator][0m Entering prepareMPI
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering exchangeMPIQuery
+[32;1m[AMRInterpolator][0m Entering calculateAnswer
+[32;1m[AMRInterpolator][0m Entering exchangeMPIAnswer
+[32;1m[AMRInterpolator][0m Leaving exchangeMPIAnswer
+G_phi_phi 80193.9
+Beta_sq 1.36e-10
+GRAMRLevel::postTimeStep 0 finished
+coarse time step   1  old time = 5.000000e-01  old dt = 5.000000e-01  wallclocktime = 1.01e+00
+Total simulation time (mins): 0.0422148.
+GRAMRLevel::writePlotHeader
+num_components :19
+component_0 :mod_phi
+component_1 :K
+component_10 :Pi_Im
+component_11 :shift1
+component_12 :shift2
+component_13 :lapse
+component_14 :A11
+component_15 :A12
+component_16 :A22
+component_17 :Aww
+component_18 :hww
+component_2 :Ham
+component_3 :Mom1
+component_4 :rho
+component_5 :chi
+component_6 :h11
+component_7 :h22
+component_8 :h12
+component_9 :Pi
+
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::writePlotLevel
+dt :0.5
+dx :2
+time :1
+is_periodic_0 :0
+is_periodic_1 :0
+ref_ratio :2
+tag_buffer_size :3
+prob_domain :((0,0) (31,31) (0,0))
+
+GRAMRLevel::fillAllEvolutionGhosts
+GRAMRLevel::writePlotLevel
+dt :0.25
+dx :1
+time :1
+is_periodic_0 :0
+is_periodic_1 :0
+ref_ratio :2
+tag_buffer_size :3
+prob_domain :((0,0) (63,63) (0,0))
+
+GRAMRLevel::writeCheckpointHeader
+num_components :22
+component_0 :chi
+component_1 :h11
+component_10 :Theta
+component_11 :Gamma1
+component_12 :Gamma2
+component_13 :lapse
+component_14 :shift1
+component_15 :shift2
+component_16 :B1
+component_17 :B2
+component_18 :phi
+component_19 :phi_Im
+component_2 :h12
+component_20 :Pi
+component_21 :Pi_Im
+component_3 :h22
+component_4 :hww
+component_5 :K
+component_6 :A11
+component_7 :A12
+component_8 :A22
+component_9 :Aww
+
+GRAMRLevel::writeCheckpointLevel
+dt :0.5
+dx :2
+time :1
+is_periodic_0 :0
+is_periodic_1 :0
+ref_ratio :2
+tag_buffer_size :3
+prob_domain :((0,0) (31,31) (0,0))
+
+GRAMRLevel::writeCheckpointLevel
+dt :0.25
+dx :1
+time :1
+is_periodic_0 :0
+is_periodic_1 :0
+ref_ratio :2
+tag_buffer_size :3
+prob_domain :((0,0) (63,63) (0,0))
+
+GRChombo finished.
