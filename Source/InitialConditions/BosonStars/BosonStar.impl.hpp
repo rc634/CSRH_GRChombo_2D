@@ -12,6 +12,8 @@
 
 #include "BosonStarSolution.hpp" //for BosonStarSolution class
 #include "BSPixel.hpp"
+#include <iomanip>
+#include <sstream>
 
 inline BosonStar::BosonStar(BosonStar_params_t a_params_BosonStar,
                             Potential::params_t a_params_potential,
@@ -20,6 +22,21 @@ inline BosonStar::BosonStar(BosonStar_params_t a_params_BosonStar,
       m_params_BosonStar(a_params_BosonStar),
       m_params_potential(a_params_potential), m_verbosity(a_verbosity)
 {
+}
+
+void BosonStar::print_star_info() const
+{
+    std::ostringstream msg;
+    msg << "  Boson star:  M_ADM = " << std::fixed << std::setprecision(6)
+        << m_1d_sol.get_ADMmass()
+        << "   phi_c = " << m_1d_sol.get_p_interp(0.);
+    std::string s = msg.str();
+    const int box_width = 52;
+    if ((int)s.size() < box_width)
+        s.resize(box_width, ' ');
+    pout() << "  +----------------------------------------------------+" << endl;
+    pout() << "  |" << s << "|" << endl;
+    pout() << "  +----------------------------------------------------+" << endl;
 }
 
 void BosonStar::compute_1d_solution(const double max_r)

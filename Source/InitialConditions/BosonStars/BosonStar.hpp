@@ -46,6 +46,9 @@ class BosonStar
     // binary spacetime BS/BH + BS/BH
     template <class data_t> void compute_BS_binary(Cell<data_t> current_cell) const;
 
+    //! Prints ADM mass and central field amplitude to pout
+    void print_star_info() const;
+
     // The object that stores the solution found by the 1d ODE integrator
     BosonStarSolution m_1d_sol;
     double m_dx;

@@ -70,6 +70,7 @@ void HeadonBS2DLevel::initialData()
         s_boson_star.reset(new BosonStar(m_p.bosonstar_params, m_p.potential_params,
                                          m_p.m_G_Newton, m_dx, m_verbosity));
         s_boson_star->compute_1d_solution(4. * m_p.L);
+        s_boson_star->print_star_info();
         s_first_call = false;
     }
     s_boson_star->m_dx = m_dx; // update for this level's grid spacing
