@@ -54,7 +54,7 @@ class RHUnion
                 m_outfiles[i].open("rh_surf_" + std::to_string(i) + ".dat",
                                    std::ios::out | std::ios::trunc);
                 m_outfiles[i] << std::setw(16) << "#t"
-                              << std::setw(6)  << "surf"
+                              << std::setw(16) << "surf"
                               << std::setw(16) << "x"
                               << std::setw(16) << "<r>"
                               << std::setw(16) << "Area"
@@ -63,6 +63,11 @@ class RHUnion
                               << std::setw(16) << "<Theta+>"
                               << std::setw(16) << "<Theta->"
                               << std::setw(16) << "err"
+                              << std::setw(16) << "K0"
+                              << std::setw(16) << "K2"
+                              << std::setw(16) << "K4"
+                              << std::setw(16) << "eq_perim"
+                              << std::setw(16) << "pol_perim"
                               << std::setw(8)  << "mode"
                               << std::endl;
             }

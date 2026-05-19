@@ -91,6 +91,41 @@ class RHSurf
     }
 
 
+    //////////////// Lengths ////////////
+
+    // Proper poloidal arc-length element at point ii: sqrt(gamma_theta_theta) dtheta
+    double dl(int ii) const
+    {
+        const double f   = m_f[ii];
+        const double fp  = df(ii);
+        const double th  = m_theta[ii];
+        const double dxi_dth  = fp * std::cos(th) - f * std::sin(th);
+        const double drho_dth = fp * std::sin(th) + f * std::cos(th);
+        const double h_th_th = m_h11[ii] * dxi_dth  * dxi_dth
+                             + 2.0 * m_h12[ii] * dxi_dth * drho_dth
+                             + m_h22[ii] * drho_dth * drho_dth;
+        return std::sqrt(h_th_th / m_chi[ii]) * m_d_theta;
+    }
+
+    // Proper azimuthal circumference at the equator (theta = pi/2)
+    double equator_perim() const
+    {
+        const int i_eq = m_NG + m_n / 2;
+        return 2.0 * M_PI * m_f[i_eq] * std::sqrt(m_hww[i_eq] / m_chi[i_eq]);
+    }
+
+    // Proper polar great-circle length (full loop through both poles)
+    double polar_perim() const
+    {
+        double polarperim = 0.;
+        RH_FOR_INTERIOR(ii)
+        {
+            polarperim += dl(ii);
+        }
+        return 2.0 * polarperim;
+    }
+
+
     //////////////// Areas //////////////
 
     double dA(int ii) const
@@ -377,6 +412,40 @@ class RHSurf
     double Theta_plus(int ii)  const { return  DivS(ii) + KSSmK(ii); }
     double Theta_minus(int ii) const { return -DivS(ii) + KSSmK(ii); }
 
+    double K0() const {
+        double integral_k = 0.;
+        RH_FOR_INTERIOR(ii)
+        {
+            integral_k += DivS(ii) * dA(ii);
+        }
+        return integral_k/Area();
+    }
+
+    double K2() const {
+        double integral_k2 = 0.;
+        const double k_0 = K0();
+        RH_FOR_INTERIOR(ii)
+        {
+            integral_k2 += pow(DivS(ii) - k_0, 2) * dA(ii);
+        }
+        return integral_k2/Area();
+    }
+
+    double K4() const {
+        double integral_k4 = 0.;
+        const double k_0 = K0();
+        const double k_2 = K2();
+        double integrand;
+        RH_FOR_INTERIOR(ii)
+        {
+            integrand = k_2 * k_2;
+            integrand -= pow(DivS(ii) - k_0, 2);
+            integral_k4 += pow(integrand, 2) * dA(ii);
+        }
+        return integral_k4/Area();
+    }
+
+
     // D_i s^i = (1/sqrt(gamma)) partial_i (sqrt(gamma) s^i), summed over i = x, y, w.
     // The w-term does NOT vanish: careful of the cartoon condition!
     double DivS(int ii) const
@@ -497,7 +566,7 @@ class RHSurf
     {
         os << std::scientific << std::setprecision(8)
            << std::setw(16) << a_time
-           << std::setw(6)  << m_index
+           << std::setw(16) << m_index
            << std::setw(16) << m_centre[0]
            << std::setw(16) << average_f()
            << std::setw(16) << Area()
@@ -506,6 +575,11 @@ class RHSurf
            << std::setw(16) << average_Theta_plus()
            << std::setw(16) << average_Theta_minus()
            << std::setw(16) << expansion_error()
+           << std::setw(16) << K0()
+           << std::setw(16) << K2()
+           << std::setw(16) << K4()
+           << std::setw(16) << equator_perim()
+           << std::setw(16) << polar_perim()
            << std::setw(8)  << state_str()
            << std::endl;
     }
@@ -539,7 +613,7 @@ class RHSurf
                << "  |  M_irr   = " << std::setw(12) << M_irr()
                << "     P_x     = " << std::setw(12) << PX()        << "  |\n"
                << "  |  <Th+>   = " << std::setw(12) << average_Theta_plus()
-               << "     <Th->   = " << std::setw(12) << average_Theta_minus() << "  |\n"
+               << "     e       = " << std::setw(12) << 1.0 - polar_perim() / equator_perim() << "  |\n"
                << "  |  err     = " << std::setw(12) << expansion_error()
                << "     mode    =       " << mode               << "  |\n"
                << "  +" << bar << "+\n";
