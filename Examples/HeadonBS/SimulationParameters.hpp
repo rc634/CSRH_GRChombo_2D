@@ -77,6 +77,7 @@ public:
         pp.load("RH_level",           m_RH_level,           m_RH_num_horizons, 0);
         pp.load("RH_time_step_freq",  m_RH_time_step_freq,  m_RH_num_horizons, 1);
         pp.load("RH_newton_crit",     m_RH_newton_crit,     m_RH_num_horizons, 0.0);
+        pp.load("RH_chase_speeds",    m_RH_chase_speeds,    m_RH_num_horizons, 1.0);
 
         // Do we want Weyl extraction, puncture tracking and constraint norm
         // calculation?
@@ -167,6 +168,7 @@ public:
     std::vector<int> m_RH_level;             // AMR level each surface runs on
     std::vector<int> m_RH_time_step_freq;    // chase iterations per update call
     std::vector<double> m_RH_newton_crit;    // switch to Newton below this expansion_error
+    std::vector<double> m_RH_chase_speeds;   // per-surface multiplier on the courant chase step
 
 #ifdef USE_AHFINDER
     AHInitialGuessEllipsoid AH_1_initial_guess_ellipsoid;

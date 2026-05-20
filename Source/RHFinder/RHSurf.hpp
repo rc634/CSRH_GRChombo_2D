@@ -34,6 +34,7 @@ class RHSurf
     double m_newton_crit = 0.0;  // switch to Newton below this expansion_error (0 = disabled)
     double m_rmin = 0.0001;
     double m_rmax = 10.0;
+    double m_chase_speed = 1.0; // multiplier on the courant chase step
     double m_d_theta;          // pi / m_n, angular spacing
 
     // field values at surface points (size n + 2*NG)
@@ -587,13 +588,12 @@ class RHSurf
     void hello() const
     {
         pout() << std::fixed << std::setprecision(6)
-               << "  surf = "   << m_index
-               << "  x = "      << std::setw(10) << m_centre[0]
-               << "  <r> = "    << std::setw(10) << average_f()
-               << "  M_irr = "  << std::setw(10) << M_irr()
-               << "  P_x = "    << std::setw(12) << PX()
-               << "  <Theta> = "<< std::setw(12) << average_Theta()
-               << "  mode = "   << state_str()
+               << "  surf = "         << m_index
+               << "  x = "            << std::setw(10) << m_centre[0]
+               << "  r = "            << std::setw(10) << average_f()
+               << "  n = "            << std::setw(6)  << m_n
+               << "  level = "        << std::setw(4)  << m_level
+               << "  chase_speed = "  << std::setw(8)  << m_chase_speed
                << std::endl;
     }
 
@@ -706,7 +706,10 @@ class RHSurf
             if (!std::isfinite(m_Expansion[ii]))
                 throw std::runtime_error("NaN/Inf in expansion at chase_step");
             const double speed = a_courant * m_d_theta * m_d_theta * m_f[ii] * m_f[ii];
-            m_f[ii] -= speed * m_Expansion[ii];
+            const double EP = m_Expansion[ii];
+            const double sign = 0.01 * EP/sqrt(EP*EP + 0.0000000000001);
+            const double size = abs(EP);
+            m_f[ii] -= speed * (sign * sqrt(size) + EP);
             m_f[ii] = std::max(m_rmin, std::min(m_rmax, m_f[ii]));
         }
         fill_ghost_even(m_f);

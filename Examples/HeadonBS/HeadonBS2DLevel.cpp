@@ -210,7 +210,8 @@ void HeadonBS2DLevel::specificPostTimeStep()
                                        m_p.m_RH_num_points,
                                        m_p.m_RH_level,
                                        m_p.m_RH_time_step_freq,
-                                       m_p.m_RH_newton_crit);
+                                       m_p.m_RH_newton_crit,
+                                       m_p.m_RH_chase_speeds);
         m_bh_amr.m_rh_union.update(m_time, m_level);
     }
 

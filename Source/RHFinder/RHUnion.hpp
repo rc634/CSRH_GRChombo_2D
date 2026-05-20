@@ -19,7 +19,7 @@ class RHUnion
     enum : int { NG = 2 }; // ghost cells on each side of each surface array
 
     int    m_n_chase           = 100;     // max interpolation calls per update
-    int    m_num_stale_repeats = 5;       // stale repeats when err > thresh_high
+    int    m_num_stale_repeats = 1;       // stale repeats when err > thresh_high
     double m_courant           = 0.25;     // normal chase step size
     double m_thresh_high       = 0.03;    // above: slow chase + stale repeats
     double m_thresh_close     = 0.0005;   // below: switch from fast chase to Newton
@@ -36,7 +36,8 @@ class RHUnion
                const std::vector<int>    &a_num_points,
                const std::vector<int>    &a_levels,
                const std::vector<int>    &a_time_step_freqs,
-               const std::vector<double> &a_newton_crits)
+               const std::vector<double> &a_newton_crits,
+               const std::vector<double> &a_chase_speeds)
     {
         m_surfaces.clear();
         m_outfiles.clear();
@@ -47,6 +48,7 @@ class RHUnion
             m_surfaces.back().m_level          = a_levels[i];
             m_surfaces.back().m_time_step_freq = a_time_step_freqs[i];
             m_surfaces.back().m_newton_crit    = a_newton_crits[i];
+            m_surfaces.back().m_chase_speed    = a_chase_speeds[i];
             std::fill(m_surfaces.back().m_f.begin(),
                       m_surfaces.back().m_f.end(), a_radii[i]);
             if (procID() == 0)
@@ -222,13 +224,14 @@ class RHUnion
             {
                 const double err_pre = errs[k];
 
+                const double courant = m_courant * surf.m_chase_speed;
                 if (err_pre > m_thresh_high)
                 {
                     for (int i = 0; i < surf.m_time_step_freq; ++i)
                     {
-                        surf.chase_step(m_courant);
+                        surf.chase_step(courant);
                         for (int j = 0; j < m_num_stale_repeats; ++j)
-                            surf.chase_step(m_courant);
+                            surf.chase_step(courant);
                         interpolate_fields();
                     }
                 }
@@ -236,7 +239,7 @@ class RHUnion
                 {
                     for (int i = 0; i < surf.m_time_step_freq; ++i)
                     {
-                        surf.chase_step(m_courant);
+                        surf.chase_step(courant);
                         interpolate_fields();
                     }
                 }
