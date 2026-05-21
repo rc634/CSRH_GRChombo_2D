@@ -162,6 +162,9 @@ stop_time = 1000.0
 # max_spatial_derivative_order = 4 # can be 4 or 6
 nan_check = 1
 
+# Gauge toggle
+use_experimental_gauge = true
+
 # Lapse evolution
 lapse_advec_coeff = 1.0
 lapse_coeff = 2.0

@@ -20,6 +20,7 @@
 
 // Problem specific includes
 #include "CCZ4Cartoon.hpp"
+#include "ExperimentalGauge.hpp"
 #include "MovingPunctureGauge.hpp"
 #include "ConstraintsCartoon.hpp"
 #include "SetValue.hpp"
@@ -83,6 +84,10 @@ void HeadonBS2DLevel::initialData()
 
     fillAllGhosts();
 
+    // Initialise B^i for the chosen gauge
+    if (m_p.m_use_experimental_gauge)
+        BoxLoops::loop(ExperimentalGauge(m_p.ccz4_params),
+                       m_state_new, m_state_new, EXCLUDE_GHOST_CELLS);
 }
 
 // Things to do before a plot level - need to calculate the Weyl scalars
@@ -107,11 +112,18 @@ void HeadonBS2DLevel::specificEvalRHS(GRLevelData &a_soln,
 
     // Calculate CCZ4 right hand side
     Potential potential(m_p.potential_params);
-    BoxLoops::loop(
-        CCZ4Cartoon<MovingPunctureGauge, FourthOrderDerivatives, Potential>(
-            m_p.ccz4_params, m_dx, m_p.sigma, potential, m_p.m_G_Newton,
-            m_p.formulation),
-        a_soln, a_rhs, EXCLUDE_GHOST_CELLS);
+    if (m_p.m_use_experimental_gauge)
+        BoxLoops::loop(
+            CCZ4Cartoon<ExperimentalGauge, FourthOrderDerivatives, Potential>(
+                m_p.ccz4_params, m_dx, m_p.sigma, potential, m_p.m_G_Newton,
+                m_p.formulation, 0., /*needs_B_matter_source=*/false),
+            a_soln, a_rhs, EXCLUDE_GHOST_CELLS);
+    else
+        BoxLoops::loop(
+            CCZ4Cartoon<MovingPunctureGauge, FourthOrderDerivatives, Potential>(
+                m_p.ccz4_params, m_dx, m_p.sigma, potential, m_p.m_G_Newton,
+                m_p.formulation, 0., /*needs_B_matter_source=*/true),
+            a_soln, a_rhs, EXCLUDE_GHOST_CELLS);
 }
 
 void HeadonBS2DLevel::specificUpdateODE(GRLevelData &a_soln,

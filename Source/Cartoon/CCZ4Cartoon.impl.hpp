@@ -21,10 +21,11 @@ template <class gauge_t, class deriv_t, class potential_t>
 inline CCZ4Cartoon<gauge_t, deriv_t, potential_t>::CCZ4Cartoon(
         params_t params, double dx, double sigma,
         potential_t a_potential, double a_G_Newton, int formulation,
-        double cosmological_constant)
+        double cosmological_constant, bool a_needs_B_matter_source)
         : CCZ4RHS<gauge_t, deriv_t>(params, dx, sigma, formulation,
                                     cosmological_constant),
-          m_potential(a_potential), m_G_Newton(a_G_Newton)
+          m_potential(a_potential), m_G_Newton(a_G_Newton),
+          m_needs_B_matter_source(a_needs_B_matter_source)
 {
 }
 
@@ -401,16 +402,19 @@ rhs.Theta += -8.0 * M_PI * m_G_Newton * vars.lapse * emtensor.rho;
 
 FOR(i)
         {
-                data_t matter_term_Gamma = 0.0;
+        data_t matter_term_Gamma = 0.0;
         FOR(j)
         {
-            matter_term_Gamma += -16.0 * M_PI * m_G_Newton * vars.lapse *
-                                 h_UU[i][j] * emtensor.Si[j];
+        matter_term_Gamma += -16.0 * M_PI * m_G_Newton * vars.lapse *
+                                h_UU[i][j] * emtensor.Si[j];
         }
 
         rhs.Gamma[i] += matter_term_Gamma;
-        rhs.B[i] += matter_term_Gamma;
+        if (m_needs_B_matter_source)
+            rhs.B[i] += matter_term_Gamma;
         }
+
+        
 
 // For matter fields
 rhs.phi = -vars.lapse * vars.Pi + advec.phi;

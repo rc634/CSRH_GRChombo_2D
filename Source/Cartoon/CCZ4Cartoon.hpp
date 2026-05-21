@@ -53,8 +53,8 @@ class CCZ4Cartoon : public CCZ4RHS<gauge_t>
         potential_t a_potential,
         double a_G_Newton,
         int formulation = CCZ4::USE_CCZ4, //!< Switches between CCZ4, BSSN,...
-        double cosmological_constant = 0  //!< Value of the cosmological const.
-
+        double cosmological_constant = 0, //!< Value of the cosmological const.
+        bool a_needs_B_matter_source = true //!< Set false for integrated/experimental MPG
     );
 
     // ScalarBubble_2D::params_t m_bubble_params;
@@ -89,6 +89,7 @@ class CCZ4Cartoon : public CCZ4RHS<gauge_t>
     
     const double m_G_Newton;
     const potential_t m_potential;
+    const bool m_needs_B_matter_source;
 };
 
 #include "CCZ4Cartoon.impl.hpp"

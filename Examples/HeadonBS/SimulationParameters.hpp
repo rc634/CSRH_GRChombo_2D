@@ -34,6 +34,7 @@ public:
     void readParams(GRParmParse &pp)
     {
         pp.load("G_Newton", m_G_Newton);
+        pp.load("use_experimental_gauge", m_use_experimental_gauge, false);
 
         // Boson star properties
         pp.load("BS_amplitude",  bosonstar_params.BS_amplitude);
@@ -153,6 +154,7 @@ public:
     // BoostedBH::params_t bh2_params;
 
     double m_G_Newton;
+    bool m_use_experimental_gauge;
     int activate_mass_extraction;
     extraction_params_t mass_extraction_params;
 
