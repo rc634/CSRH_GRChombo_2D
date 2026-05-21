@@ -17,9 +17,7 @@ class RHUnion
 {
   public:
     enum : int { NG = 2 }; // ghost cells on each side of each surface array
-
-    int    m_n_chase           = 100;     // max interpolation calls per update
-    int    m_num_stale_repeats = 1;       // stale repeats when err > thresh_high
+    int    m_num_stale_repeats = 5;       // stale repeats when err > thresh_high
     double m_courant           = 0.25;     // normal chase step size
     double m_thresh_high       = 0.03;    // above: slow chase + stale repeats
     double m_thresh_close     = 0.0005;   // below: switch from fast chase to Newton
@@ -188,98 +186,101 @@ class RHUnion
             if (s.m_level == a_level) { any = true; break; }
         if (!any) return;
 
+        // pull fresh grid data for all surfaces in one MPI round-trip
         m_interpolator->refresh();
         interpolate_fields();
 
+        // re-centre all surfaces using the fresh field data
         for (auto &surf : m_surfaces)
             surf.re_centre();
 
         const int n = (int)m_surfaces.size();
 
-        // per-surface error and state (all surfaces, so diagnostics stay current)
-        std::vector<double> errs(n);
+        // precompute per-surface chase constants and the shared iteration count
+        std::vector<double> courants(n);
+        std::vector<int>    halves(n);  // iteration from which dense re-interpolation begins
+        int max_iters = 0;
         for (int k = 0; k < n; ++k)
         {
-            errs[k] = m_surfaces[k].expansion_error();
-            auto &surf = m_surfaces[k];
-            if (errs[k] <= m_thresh_super_low)
-                surf.m_state = RHSurf::SolverState::FOUND;
-            else if (errs[k] <= m_thresh_close)
-                surf.m_state = RHSurf::SolverState::CLOSE;
-            else if (errs[k] <= m_thresh_high)
-                surf.m_state = RHSurf::SolverState::MEDIUM;
-            else
-                surf.m_state = RHSurf::SolverState::FAR;
+            courants[k] = m_courant * m_surfaces[k].m_chase_speed;
+            halves[k]   = m_surfaces[k].m_time_step_freq / 1.3333;
+            if (!m_surfaces[k].m_dead && m_surfaces[k].m_level == a_level)
+                max_iters = std::max(max_iters, m_surfaces[k].m_time_step_freq);
         }
 
-        // chase + Newton, per surface
-        for (int k = 0; k < n; ++k)
+        // chase — step-first so all active surfaces advance in lockstep and share
+        // the same interpolated field snapshot at every iteration.
+        // Each surface flags whether it wants fresh data; if any do, one batched
+        // MPI interpolation covers all.  Interpolation is sparse in the first half
+        // (every m_num_stale_repeats steps) and fires every step thereafter.
+        for (int i = 0; i < max_iters; ++i)
         {
-            auto &surf = m_surfaces[k];
-            if (surf.m_level != a_level) continue;
-            if (surf.m_dead) continue;
-            if (errs[k] <= m_thresh_super_low) continue;
-
-            try
+            bool needs_interp = false;
+            for (int k = 0; k < n; ++k)
             {
-                const double err_pre = errs[k];
+                auto &surf = m_surfaces[k];
+                if (surf.m_level != a_level || surf.m_dead) continue;
+                if (i >= surf.m_time_step_freq) continue; // surface finished its quota
 
-                const double courant = m_courant * surf.m_chase_speed;
-                if (err_pre > m_thresh_high)
+                try
                 {
-                    for (int i = 0; i < surf.m_time_step_freq; ++i)
-                    {
-                        surf.chase_step(courant);
-                        for (int j = 0; j < m_num_stale_repeats; ++j)
-                            surf.chase_step(courant);
-                        interpolate_fields();
-                    }
+                    surf.chase_step(courants[k]);
+                    if (i >= halves[k] || (i % m_num_stale_repeats == 0))
+                        needs_interp = true;
                 }
-                else
+                catch (const std::exception &e)
                 {
-                    for (int i = 0; i < surf.m_time_step_freq; ++i)
-                    {
-                        surf.chase_step(courant);
-                        interpolate_fields();
-                    }
-                }
-
-                if (surf.m_newton_crit > 0.0)
-                {
-                    const double err_post = surf.expansion_error();
-                    if (err_post < surf.m_newton_crit)
-                    {
-                        const std::vector<double> f_before_newton = surf.m_f;
-
-                        for (int ns = 0; ns < 10; ++ns)
-                        {
-                            interpolate_fields();
-                            surf.banded_newton_step(m_newton_delta_f, m_courant);
-                        }
-                        interpolate_fields();
-
-                        // Revert if Newton made things worse
-                        const double err_after_newton = surf.expansion_error();
-                        if (err_after_newton > err_post)
-                        {
-                            surf.m_f = f_before_newton;
-                            surf.fill_all_ghosts();
-                            interpolate_fields();
-                            pout() << "RHFinder: Newton worsened surface " << k
-                                   << " (" << err_post << " -> " << err_after_newton
-                                   << "), reverting.\n";
-                        }
-                    }
+                    surf.m_dead = true;
+                    pout() << "\nRHFinder: surface " << k << " marked dead: "
+                           << e.what() << "\n";
                 }
             }
-            catch (const std::exception &e)
-            {
-                surf.m_dead = true;
-                pout() << "\nRHFinder: surface " << k << " marked dead: "
-                       << e.what() << "\n";
-            }
+            if (needs_interp)
+                interpolate_fields(); // one batched MPI call covers all surfaces
         }
 
+        // Newton polish — activated per surface once err drops below m_newton_crit.
+        // Reverts if Newton diverges.
+        // for (int k = 0; k < n; ++k)
+        // {
+        //     auto &surf = m_surfaces[k];
+        //     if (surf.m_level != a_level || surf.m_dead) continue;
+        //     if (errs[k] <= m_thresh_super_low) continue;
+        //     if (surf.m_newton_crit <= 0.0) continue;
+
+        //     try
+        //     {
+        //         const double err_post = surf.expansion_error();
+        //         if (err_post < surf.m_newton_crit)
+        //         {
+        //             const std::vector<double> f_before_newton = surf.m_f;
+
+        //             for (int ns = 0; ns < 10; ++ns)
+        //             {
+        //                 interpolate_fields();
+        //                 surf.banded_newton_step(m_newton_delta_f, m_courant);
+        //             }
+        //             interpolate_fields();
+
+        //             const double err_after_newton = surf.expansion_error();
+        //             if (err_after_newton > err_post)
+        //             {
+        //                 surf.m_f = f_before_newton;
+        //                 surf.fill_all_ghosts();
+        //                 interpolate_fields();
+        //                 pout() << "RHFinder: Newton worsened surface " << k
+        //                        << " (" << err_post << " -> " << err_after_newton
+        //                        << "), reverting.\n";
+        //             }
+        //         }
+        //     }
+        //     catch (const std::exception &e)
+        //     {
+        //         surf.m_dead = true;
+        //         pout() << "\nRHFinder: surface " << k << " marked dead: "
+        //                << e.what() << "\n";
+        //     }
+        // }
 
         // re-evaluate states so fancy_hello and rhout reflect post-solve error
         for (int k = 0; k < n; ++k)
