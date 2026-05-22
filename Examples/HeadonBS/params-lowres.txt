@@ -245,14 +245,14 @@ num_points_theta_mass = 24
 
 # RHFinder (NOT AH Finder, R is Robins one)
 RH_activate = true
-RH_num_horizons = 3
+RH_num_horizons = 2
 
 # horizon vector args, i.e. 1 per horizon
-RH_initial_radii = 1.4 1.4 1.4 1.4
-RH_initial_centre = 192. 192. 192. 192.
-RH_num_points = 128 128 128 128
-RH_time_step_freq = 2000 2000 2000 2000
-RH_chase_speeds = 4 4 4 1 1 1 1 1 1
+RH_initial_radii = 0.6 0.6
+RH_initial_centre = 192. 192.
+RH_num_points = 32 64 64 
+RH_time_step_freq = 1000 1000 
+RH_chase_speeds = 1 1 1 1 1 1
 RH_level = 1 1 1 1 1 1 1 1 1 1 1
 
 # newton solver barely makes a difference, leave off for now

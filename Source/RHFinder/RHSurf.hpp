@@ -446,6 +446,37 @@ class RHSurf
         return integral_k4/Area();
     }
 
+    // Area-weighted L=2 Legendre projection of the mean curvature:
+    // C_2 = integral( K * P_2(cos theta) * dA ) / integral( dA )
+    // Zero for a round surface; non-zero encodes pole-vs-equator curvature asymmetry.
+    double KP2() const {
+        double num = 0., denom = 0.;
+        RH_FOR_INTERIOR(ii)
+        {
+            const double x   = std::cos(m_theta[ii]);
+            const double P2  = 0.5 * (3.*x*x - 1.);
+            const double dAi = dA(ii);
+            num   += DivS(ii) * P2 * dAi;
+            denom += dAi;
+        }
+        return num / denom;
+    }
+
+    // Area-weighted L=4 Legendre projection of the mean curvature:
+    // C_4 = integral( K * P_4(cos theta) * dA ) / integral( dA )
+    double KP4() const {
+        double num = 0., denom = 0.;
+        RH_FOR_INTERIOR(ii)
+        {
+            const double x   = std::cos(m_theta[ii]);
+            const double x2  = x * x;
+            const double P4  = (35.*x2*x2 - 30.*x2 + 3.) / 8.;
+            const double dAi = dA(ii);
+            num   += DivS(ii) * P4 * dAi;
+            denom += dAi;
+        }
+        return num / denom;
+    }
 
     // D_i s^i = (1/sqrt(gamma)) partial_i (sqrt(gamma) s^i), summed over i = x, y, w.
     // The w-term does NOT vanish: careful of the cartoon condition!
@@ -579,6 +610,8 @@ class RHSurf
            << std::setw(16) << K0()
            << std::setw(16) << K2()
            << std::setw(16) << K4()
+           << std::setw(16) << KP2()
+           << std::setw(16) << KP4()
            << std::setw(16) << equator_perim()
            << std::setw(16) << polar_perim()
            << std::setw(8)  << state_str()
@@ -616,6 +649,8 @@ class RHSurf
                << "     e       = " << std::setw(12) << 1.0 - polar_perim() / equator_perim() << "  |\n"
                << "  |  err     = " << std::setw(12) << expansion_error()
                << "     mode    =       " << mode               << "  |\n"
+               << "  |  K0      = " << std::setw(12) << K0()
+               << "     KP2     = " << std::setw(12) << KP2()   << "  |\n"
                << "  +" << bar << "+\n";
     }
 

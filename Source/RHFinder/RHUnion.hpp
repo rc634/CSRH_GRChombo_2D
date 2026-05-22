@@ -19,7 +19,7 @@ class RHUnion
     enum : int { NG = 2 }; // ghost cells on each side of each surface array
     int    m_num_stale_repeats = 5;       // stale repeats when err > thresh_high
     double m_courant           = 0.25;     // normal chase step size
-    double m_thresh_high       = 0.03;    // above: slow chase + stale repeats
+    double m_thresh_high       = 0.0001;    // above: slow chase + stale repeats
     double m_thresh_close     = 0.0005;   // below: switch from fast chase to Newton
     double m_thresh_super_low  = 0.000001; // below: surface converged, stop
     double m_newton_delta_f    = 1e-4;    // finite difference step for Jacobian assembly
@@ -66,6 +66,8 @@ class RHUnion
                               << std::setw(16) << "K0"
                               << std::setw(16) << "K2"
                               << std::setw(16) << "K4"
+                              << std::setw(16) << "KP2"
+                              << std::setw(16) << "KP4"
                               << std::setw(16) << "eq_perim"
                               << std::setw(16) << "pol_perim"
                               << std::setw(8)  << "mode"
@@ -196,37 +198,47 @@ class RHUnion
 
         const int n = (int)m_surfaces.size();
 
-        // precompute per-surface chase constants and the shared iteration count
+        // classify surfaces and lock in the chase regime for this update
+        std::vector<double> errs(n);
+        for (int k = 0; k < n; ++k)
+        {
+            errs[k] = m_surfaces[k].expansion_error();
+            auto &surf = m_surfaces[k];
+            if      (errs[k] <= m_thresh_super_low) surf.m_state = RHSurf::SolverState::FOUND;
+            else if (errs[k] <= m_thresh_high)      surf.m_state = RHSurf::SolverState::CLOSE;
+            else                                    surf.m_state = RHSurf::SolverState::FAR;
+        }
+
+        // precompute per-surface courants and the shared iteration count;
+        // found surfaces are excluded — they need no further chasing
         std::vector<double> courants(n);
-        std::vector<int>    halves(n);  // iteration from which dense re-interpolation begins
         int max_iters = 0;
         for (int k = 0; k < n; ++k)
         {
             courants[k] = m_courant * m_surfaces[k].m_chase_speed;
-            halves[k]   = m_surfaces[k].m_time_step_freq / 1.3333;
-            if (!m_surfaces[k].m_dead && m_surfaces[k].m_level == a_level)
+            if (!m_surfaces[k].m_dead && m_surfaces[k].m_level == a_level &&
+                errs[k] > m_thresh_super_low)
                 max_iters = std::max(max_iters, m_surfaces[k].m_time_step_freq);
         }
 
-        // chase — step-first so all active surfaces advance in lockstep and share
-        // the same interpolated field snapshot at every iteration.
-        // Each surface flags whether it wants fresh data; if any do, one batched
-        // MPI interpolation covers all.  Interpolation is sparse in the first half
-        // (every m_num_stale_repeats steps) and fires every step thereafter.
+        // chase — step-first so all active surfaces advance in lockstep.
+        // FAR surfaces take extra stale steps to close the gap faster.
+        // Every iteration ends with a fresh interpolation for all surfaces.
         for (int i = 0; i < max_iters; ++i)
         {
-            bool needs_interp = false;
             for (int k = 0; k < n; ++k)
             {
                 auto &surf = m_surfaces[k];
                 if (surf.m_level != a_level || surf.m_dead) continue;
-                if (i >= surf.m_time_step_freq) continue; // surface finished its quota
+                if (errs[k] <= m_thresh_super_low) continue; // FOUND: nothing to do
+                if (i >= surf.m_time_step_freq) continue;    // surface finished its quota
 
                 try
                 {
                     surf.chase_step(courants[k]);
-                    if (i >= halves[k] || (i % m_num_stale_repeats == 0))
-                        needs_interp = true;
+                    if (errs[k] > m_thresh_high) // FAR: stale repeats to close gap faster
+                        for (int j = 0; j < m_num_stale_repeats; ++j)
+                            surf.chase_step(courants[k]);
                 }
                 catch (const std::exception &e)
                 {
@@ -235,8 +247,7 @@ class RHUnion
                            << e.what() << "\n";
                 }
             }
-            if (needs_interp)
-                interpolate_fields(); // one batched MPI call covers all surfaces
+            interpolate_fields(); // always refresh — one batched MPI call covers all surfaces
         }
 
         // Newton polish — activated per surface once err drops below m_newton_crit.
@@ -288,10 +299,9 @@ class RHUnion
             auto &surf = m_surfaces[k];
             if (surf.m_dead) continue;
             const double err = surf.expansion_error();
-            if (err <= m_thresh_super_low)   surf.m_state = RHSurf::SolverState::FOUND;
-            else if (err <= m_thresh_close) surf.m_state = RHSurf::SolverState::CLOSE;
-            else if (err <= m_thresh_high)   surf.m_state = RHSurf::SolverState::MEDIUM;
-            else                             surf.m_state = RHSurf::SolverState::FAR;
+            if      (err <= m_thresh_super_low) surf.m_state = RHSurf::SolverState::FOUND;
+            else if (err <= m_thresh_high)      surf.m_state = RHSurf::SolverState::CLOSE;
+            else                                surf.m_state = RHSurf::SolverState::FAR;
         }
 
         // file outputs, rh_out ...

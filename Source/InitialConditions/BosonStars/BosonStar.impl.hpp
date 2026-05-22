@@ -63,10 +63,12 @@ void BosonStar::compute_1d_solution(const double max_r)
 // Compute the value of the initial vars on the grid
 template <class data_t> void BosonStar::compute(Cell<data_t> current_cell) const
 {
-    if (m_params_BosonStar.binary)
+    if (m_params_BosonStar.binary) {
         compute_BS_binary(current_cell);
-    else
+    } else {
         compute_BH(current_cell);
+    }
+
 }
 
 template <class data_t> void BosonStar::compute_BH(Cell<data_t> current_cell) const
@@ -189,6 +191,84 @@ template <class data_t> void BosonStar::compute_BS_binary(Cell<data_t> current_c
     // Store the initial values of the variables
     current_cell.store_vars(vars);
 }
+
+
+
+// // Compute the value of the initial vars on the grid
+// template <class data_t> void BosonStar::compute_GERRYTEST(Cell<data_t> current_cell) const
+// {
+//     // Lets goooo
+
+//     CCZ4CartoonVars::VarsWithGauge<data_t> vars;
+//     //  MatterCCZ4<ComplexScalarField<>>::Vars<data_t> vars;
+//     // Load variables (should be set to zero if this is a single BS)
+
+//     current_cell.load_vars(vars);
+//     // VarsTools::assign(vars, 0.); // Set only the non-zero components below
+//     //Coordinates<data_t> coords(current_cell, m_dx,
+//     //                           m_params_BosonStar.star_centre);
+
+
+//     Coordinates<data_t> coords(current_cell, m_dx,
+//                                m_params_BosonStar.binary_centre);
+
+//      // Import binary configuration params
+//     double rapidity  = m_params_BosonStar.binary_rapidity;
+//     bool binary      = m_params_BosonStar.binary;
+//     double M         = m_params_BosonStar.BH_mass;
+//     double separation = m_params_BosonStar.binary_separation;
+//     // int conformal_power = m_params_BosonStar.conformal_factor_power;
+//     int initial_data_choice = m_params_BosonStar.id_choice;
+//     bool print_asymptotics = m_params_BosonStar.print_asymptotics;
+
+//     // * - * - * - * - * - * - * - * - * - * - * - * -
+
+//     // hard coded test metric 
+//     double d = 5.;
+//     double m = 0.05;
+//     double r1 = sqrt((coords.x-d/2.)*(coords.x-d/2.) + coords.y*coords.y);
+//     double r2 = sqrt((coords.x+d/2.)*(coords.x+d/2.) + coords.y*coords.y);
+//     double psi = 1. + 0.5 * m * ( 1./r1 + 1./r2 );
+
+//     // * - * - * - * - * - * - * - * - * - * - * - * -
+
+
+//     // Here we use Thomas Helfer's trick and find the corresponding fixed values to be substracted in the initial guess
+//     // is kroneka delta in infinite separation
+//     double kroneker_helfer[3][3] = {{1.,0.,0.},{0.,1.,0.},{0.,0.,1.}};
+//     double gamma[3][3] = {{0.,0.,0.},{0.,0.,0.},{0.,0.,0.}};
+//     double Kij[3][3] = {{0.,0.,0.},{0.,0.,0.},{0.,0.,0.}};
+
+
+//     // superimpose metrics and curvatures
+//     for (size_t i = 0; i < 3; i++) {
+//       for (size_t j = 0; j < 3; j++) {
+//         gamma[i][j] = pow(psi,4) * kroneker_helfer[i][j];
+//         Kij[i][j] = -pow(psi,4) * kroneker_helfer[i][j];
+//       }
+//     }
+//     // DIAGONAL METRIC ASSUMED!
+//     vars.K = - 3. * pow(psi,4);
+
+//     // GAUGE
+//     // take vars from pixel sum
+//     vars.chi = pow(gamma[0][0]*gamma[1][1]*gamma[2][2],-1./3.);
+//     // pre-collapsed lapse
+//     vars.lapse = sqrt(vars.chi);
+
+//     // METRIC / CURVATURE
+//     FOR2(i,j) {
+//       vars.h[i][j] = gamma[i][j] * vars.chi;
+//       vars.A[i][j] = (Kij[i][j] - (vars.K/3.) * gamma[i][j]) * vars.chi;
+//     }
+//     vars.hww = gamma[2][2] * vars.chi;
+//     vars.Aww = (Kij[2][2] - (vars.K/3.) * gamma[2][2]) * vars.chi;
+
+//     // no matter
+
+//     // Store the initial values of the variables
+//     current_cell.store_vars(vars);
+// }
 
 
 #endif /* BOSONSTAR_IMPL_HPP_ */
