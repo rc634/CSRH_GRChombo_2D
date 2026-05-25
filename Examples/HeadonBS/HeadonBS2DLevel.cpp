@@ -213,9 +213,9 @@ void HeadonBS2DLevel::specificPostTimeStep()
     // Robins Radius Horizon finder
     if (m_p.m_RH_activate)
     {
-        // setup on the first level that fires (finest-first in GRChombo), so
-        // every surface gets a t=0 entry when its own level calls update below
-        if (first_step && m_bh_amr.m_rh_union.m_surfaces.empty())
+        // setup on the first call (fresh start or restart); surfaces are empty
+        // until this runs. On restart, setup prunes and reopens files in append mode.
+        if (m_bh_amr.m_rh_union.m_surfaces.empty())
             m_bh_amr.m_rh_union.setup(m_p.m_RH_num_horizons,
                                        m_p.m_RH_initial_radii,
                                        m_p.m_RH_initial_centre,
@@ -223,7 +223,9 @@ void HeadonBS2DLevel::specificPostTimeStep()
                                        m_p.m_RH_level,
                                        m_p.m_RH_time_step_freq,
                                        m_p.m_RH_newton_crit,
-                                       m_p.m_RH_chase_speeds);
+                                       m_p.m_RH_chase_speeds,
+                                       m_p.m_RH_start_times,
+                                       m_restart_time);
         m_bh_amr.m_rh_union.update(m_time, m_level);
     }
 

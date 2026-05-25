@@ -3,8 +3,11 @@
 
 #include <array>
 #include <cmath>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <vector>
 #include "RHBandedMatrixInverter.hpp"
 
@@ -26,8 +29,8 @@ class RHSurf
     std::vector<double> m_theta;      // size n + 2*NG
     std::vector<double> m_f;          // size n + 2*NG, initialised to 1
     std::vector<double> m_Expansion;  // Theta_plus at each interior point, filled before chasing
-    enum class SolverState { FAR, MEDIUM, CLOSE, FOUND };
-    SolverState m_state = SolverState::FAR;
+    enum class SolverState { DORMANT, FAR, MEDIUM, CLOSE, FOUND };
+    SolverState m_state = SolverState::DORMANT;
     bool m_dead         = false; // set on fatal error; surface is never updated again
     int m_level          = 0;    // AMR level this surface is updated on
     int m_time_step_freq = 1;    // chase iterations per update call
@@ -35,6 +38,7 @@ class RHSurf
     double m_rmin = 0.0001;
     double m_rmax = 10.0;
     double m_chase_speed = 1.0; // multiplier on the courant chase step
+    double m_start_time  = 0.0; // simulation time before which the surface is dormant
     double m_d_theta;          // pi / m_n, angular spacing
 
     // field values at surface points (size n + 2*NG)
@@ -587,10 +591,11 @@ class RHSurf
         if (m_dead) return "dead  ";
         switch (m_state)
         {
-            case SolverState::FOUND:  return "found ";
-            case SolverState::CLOSE:  return "close ";
-            case SolverState::MEDIUM: return "medium";
-            default:                  return "far   ";
+            case SolverState::FOUND:   return "found ";
+            case SolverState::CLOSE:   return "close ";
+            case SolverState::MEDIUM:  return "medium";
+            case SolverState::DORMANT: return "dormnt";
+            default:                   return "far   ";
         }
     }
 
@@ -616,6 +621,41 @@ class RHSurf
            << std::setw(16) << polar_perim()
            << std::setw(8)  << state_str()
            << std::endl;
+    }
+
+    // Write one row of f values: t  f[0]  f[1]  ...  f[n-1]  (interior points only)
+    void print_f(std::ostream &os, double a_time) const
+    {
+        os << std::scientific << std::setprecision(8) << std::setw(16) << a_time;
+        for (int i = 0; i < m_n; ++i)
+            os << std::setw(16) << m_f[m_NG + i];
+        os << std::endl;
+    }
+
+    // Remove all rows with t > a_restart_time from this surface's output files.
+    // Called before re-opening in append mode on a Chombo restart.
+    void prune(double a_restart_time) const
+    {
+        auto prune_file = [&](const std::string &fname)
+        {
+            std::ifstream in(fname);
+            if (!in.is_open()) return; // file doesn't exist yet
+            std::vector<std::string> kept;
+            std::string line;
+            while (std::getline(in, line))
+            {
+                if (line.empty() || line.front() == '#') { kept.push_back(line); continue; }
+                std::istringstream iss(line);
+                double t;
+                if (!(iss >> t) || t <= a_restart_time) kept.push_back(line);
+            }
+            in.close();
+            std::ofstream out(fname, std::ios::out | std::ios::trunc);
+            for (const auto &l : kept)
+                out << l << '\n';
+        };
+        prune_file("rh_surf_" + std::to_string(m_index) + ".dat");
+        prune_file("rh_f"     + std::to_string(m_index) + ".dat");
     }
 
     void hello() const

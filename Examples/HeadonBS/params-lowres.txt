@@ -12,7 +12,7 @@ verbosity = 0
 # output_path = "" # Main path for all files. Must exist!
 chk_prefix = chk/BosonChk_
 plot_prefix = plt/Bosonp_
-#restart_file = chk/BosonChk_
+# restart_file = chk/BosonChk_000005.2d.hdf5
 
 # HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
 checkpoint_interval = 100
@@ -251,9 +251,10 @@ RH_num_horizons = 2
 RH_initial_radii = 0.6 0.6
 RH_initial_centre = 192. 192.
 RH_num_points = 32 64 64 
-RH_time_step_freq = 1000 1000 
+RH_time_step_freq = 4000 4000 
 RH_chase_speeds = 1 1 1 1 1 1
 RH_level = 1 1 1 1 1 1 1 1 1 1 1
+RH_start_times = -1.0 1.0 -1.0
 
 # newton solver barely makes a difference, leave off for now
 RH_newton_crit = 0 0 0 0 0 0 0 0 0 0 0 

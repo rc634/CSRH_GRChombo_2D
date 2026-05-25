@@ -25,6 +25,7 @@ class RHUnion
     double m_newton_delta_f    = 1e-4;    // finite difference step for Jacobian assembly
     std::vector<RHSurf> m_surfaces;
     std::vector<std::ofstream> m_outfiles;
+    std::vector<std::ofstream> m_ffiles;
 
     RHUnion() {}
 
@@ -35,11 +36,15 @@ class RHUnion
                const std::vector<int>    &a_levels,
                const std::vector<int>    &a_time_step_freqs,
                const std::vector<double> &a_newton_crits,
-               const std::vector<double> &a_chase_speeds)
+               const std::vector<double> &a_chase_speeds,
+               const std::vector<double> &a_start_times,
+               double                     a_restart_time = 0.)
     {
         m_surfaces.clear();
         m_outfiles.clear();
         m_outfiles.resize(a_num);
+        m_ffiles.clear();
+        m_ffiles.resize(a_num);
         for (int i = 0; i < a_num; ++i)
         {
             m_surfaces.emplace_back(a_num_points[i], NG, std::vector<double>{a_centres_x[i], 0.0}, i);
@@ -47,31 +52,48 @@ class RHUnion
             m_surfaces.back().m_time_step_freq = a_time_step_freqs[i];
             m_surfaces.back().m_newton_crit    = a_newton_crits[i];
             m_surfaces.back().m_chase_speed    = a_chase_speeds[i];
+            m_surfaces.back().m_start_time     = a_start_times[i];
             std::fill(m_surfaces.back().m_f.begin(),
                       m_surfaces.back().m_f.end(), a_radii[i]);
             if (procID() == 0)
             {
-                m_outfiles[i].open("rh_surf_" + std::to_string(i) + ".dat",
-                                   std::ios::out | std::ios::trunc);
-                m_outfiles[i] << std::setw(16) << "#t"
-                              << std::setw(16) << "surf"
-                              << std::setw(16) << "x"
-                              << std::setw(16) << "<r>"
-                              << std::setw(16) << "Area"
-                              << std::setw(16) << "M_irr"
-                              << std::setw(16) << "P_x"
-                              << std::setw(16) << "<Theta+>"
-                              << std::setw(16) << "<Theta->"
-                              << std::setw(16) << "err"
-                              << std::setw(16) << "K0"
-                              << std::setw(16) << "K2"
-                              << std::setw(16) << "K4"
-                              << std::setw(16) << "KP2"
-                              << std::setw(16) << "KP4"
-                              << std::setw(16) << "eq_perim"
-                              << std::setw(16) << "pol_perim"
-                              << std::setw(8)  << "mode"
-                              << std::endl;
+                const bool is_restart = (a_restart_time > 0.);
+                if (is_restart)
+                    m_surfaces.back().prune(a_restart_time);
+                const auto mode = is_restart
+                    ? std::ios::out | std::ios::app
+                    : std::ios::out | std::ios::trunc;
+
+                m_outfiles[i].open("rh_surf_" + std::to_string(i) + ".dat", mode);
+                if (!is_restart)
+                    m_outfiles[i] << std::setw(16) << "#t"
+                                  << std::setw(16) << "surf"
+                                  << std::setw(16) << "x"
+                                  << std::setw(16) << "<r>"
+                                  << std::setw(16) << "Area"
+                                  << std::setw(16) << "M_irr"
+                                  << std::setw(16) << "P_x"
+                                  << std::setw(16) << "<Theta+>"
+                                  << std::setw(16) << "<Theta->"
+                                  << std::setw(16) << "err"
+                                  << std::setw(16) << "K0"
+                                  << std::setw(16) << "K2"
+                                  << std::setw(16) << "K4"
+                                  << std::setw(16) << "KP2"
+                                  << std::setw(16) << "KP4"
+                                  << std::setw(16) << "eq_perim"
+                                  << std::setw(16) << "pol_perim"
+                                  << std::setw(8)  << "mode"
+                                  << std::endl;
+
+                m_ffiles[i].open("rh_f" + std::to_string(i) + ".dat", mode);
+                if (!is_restart)
+                {
+                    m_ffiles[i] << std::setw(16) << "#t";
+                    for (int j = 0; j < a_num_points[i]; ++j)
+                        m_ffiles[i] << std::setw(16) << ("f[" + std::to_string(j) + "]");
+                    m_ffiles[i] << std::endl;
+                }
             }
         }
 
@@ -180,6 +202,8 @@ class RHUnion
         }
     }
 
+    // One finder step for all surfaces assigned to a_level.
+    // Flow: dormancy check → interpolate → classify → chase loop → output.
     void update(double a_time, int a_level)
     {
         // skip entirely if no surface runs on this AMR level
@@ -187,6 +211,19 @@ class RHUnion
         for (const auto &s : m_surfaces)
             if (s.m_level == a_level) { any = true; break; }
         if (!any) return;
+
+        const auto t_start = std::chrono::steady_clock::now();
+
+        // update dormancy: surfaces before their start time stay/become dormant;
+        // surfaces that have just passed their start time wake to FAR for classification
+        for (auto &surf : m_surfaces)
+        {
+            if (surf.m_dead) continue;
+            if (a_time < surf.m_start_time)
+                surf.m_state = RHSurf::SolverState::DORMANT;
+            else if (surf.m_state == RHSurf::SolverState::DORMANT)
+                surf.m_state = RHSurf::SolverState::FAR;
+        }
 
         // pull fresh grid data for all surfaces in one MPI round-trip
         m_interpolator->refresh();
@@ -198,38 +235,42 @@ class RHUnion
 
         const int n = (int)m_surfaces.size();
 
-        // classify surfaces and lock in the chase regime for this update
+        // measure pre-chase expansion error and assign solver regime;
+        // this regime is held fixed for the entire chase below
         std::vector<double> errs(n);
         for (int k = 0; k < n; ++k)
         {
-            errs[k] = m_surfaces[k].expansion_error();
             auto &surf = m_surfaces[k];
+            if (surf.m_state == RHSurf::SolverState::DORMANT) { errs[k] = 0.; continue; }
+            errs[k] = surf.expansion_error();
             if      (errs[k] <= m_thresh_super_low) surf.m_state = RHSurf::SolverState::FOUND;
             else if (errs[k] <= m_thresh_high)      surf.m_state = RHSurf::SolverState::CLOSE;
             else                                    surf.m_state = RHSurf::SolverState::FAR;
         }
 
-        // precompute per-surface courants and the shared iteration count;
-        // found surfaces are excluded — they need no further chasing
+        // precompute per-surface courants; max_iters is the longest active surface's quota
         std::vector<double> courants(n);
         int max_iters = 0;
         for (int k = 0; k < n; ++k)
         {
             courants[k] = m_courant * m_surfaces[k].m_chase_speed;
-            if (!m_surfaces[k].m_dead && m_surfaces[k].m_level == a_level &&
+            if (!m_surfaces[k].m_dead &&
+                m_surfaces[k].m_state != RHSurf::SolverState::DORMANT &&
+                m_surfaces[k].m_level == a_level &&
                 errs[k] > m_thresh_super_low)
                 max_iters = std::max(max_iters, m_surfaces[k].m_time_step_freq);
         }
 
-        // chase — step-first so all active surfaces advance in lockstep.
+        // chase — step-first so all active surfaces advance in lockstep and share
+        // the same interpolated field snapshot at every iteration.
         // FAR surfaces take extra stale steps to close the gap faster.
-        // Every iteration ends with a fresh interpolation for all surfaces.
         for (int i = 0; i < max_iters; ++i)
         {
             for (int k = 0; k < n; ++k)
             {
                 auto &surf = m_surfaces[k];
                 if (surf.m_level != a_level || surf.m_dead) continue;
+                if (surf.m_state == RHSurf::SolverState::DORMANT) continue;
                 if (errs[k] <= m_thresh_super_low) continue; // FOUND: nothing to do
                 if (i >= surf.m_time_step_freq) continue;    // surface finished its quota
 
@@ -247,7 +288,18 @@ class RHUnion
                            << e.what() << "\n";
                 }
             }
-            interpolate_fields(); // always refresh — one batched MPI call covers all surfaces
+            interpolate_fields(); // one batched MPI call refreshes all surfaces
+
+            // early exit if every active surface on this level is converged
+            bool all_found = true;
+            for (int k = 0; k < n; ++k)
+            {
+                const auto &surf = m_surfaces[k];
+                if (surf.m_level != a_level || surf.m_dead) continue;
+                if (surf.m_state == RHSurf::SolverState::DORMANT) continue;
+                if (surf.expansion_error() > m_thresh_super_low) { all_found = false; break; }
+            }
+            if (all_found) break;
         }
 
         // Newton polish — activated per surface once err drops below m_newton_crit.
@@ -293,23 +345,29 @@ class RHUnion
         //     }
         // }
 
-        // re-evaluate states so fancy_hello and rhout reflect post-solve error
+        // re-evaluate states post-chase so output and display reflect the final error
         for (int k = 0; k < n; ++k)
         {
             auto &surf = m_surfaces[k];
             if (surf.m_dead) continue;
+            if (surf.m_state == RHSurf::SolverState::DORMANT) continue;
             const double err = surf.expansion_error();
             if      (err <= m_thresh_super_low) surf.m_state = RHSurf::SolverState::FOUND;
             else if (err <= m_thresh_high)      surf.m_state = RHSurf::SolverState::CLOSE;
             else                                surf.m_state = RHSurf::SolverState::FAR;
         }
 
-        // file outputs, rh_out ...
+        // write diagnostics (rhout) and full f(theta) profile (fout) for all surfaces
         rhout(a_time);
+        fout(a_time);
+
+        const double elapsed = std::chrono::duration<double>(
+            std::chrono::steady_clock::now() - t_start).count();
 
         if (procID() == 0)
         {
-            pout() << "\nRHFinder::update  t = " << std::fixed << std::setprecision(4) << a_time;
+            pout() << "\nRHFinder::update  t = " << std::fixed << std::setprecision(4) << a_time
+                   << "  (" << std::setprecision(3) << elapsed << " s)";
             for (const auto &surf : m_surfaces)
                 surf.fancy_hello();
         }
@@ -317,14 +375,26 @@ class RHUnion
 
     void rhout(double a_time)
     {
-        if (procID() != 0)
-        {
-            return;
-        }
+        if (procID() != 0) return;
         for (int i = 0; i < (int)m_surfaces.size(); ++i)
-        {
             m_surfaces[i].print_diagnostics(m_outfiles[i], a_time);
-        }
+    }
+
+    void fout(double a_time)
+    {
+        if (procID() != 0) return;
+        for (int i = 0; i < (int)m_surfaces.size(); ++i)
+            m_surfaces[i].print_f(m_ffiles[i], a_time);
+    }
+
+    // Remove rows with t > a_restart_time from all output files.
+    // Call this after setup() (so surface indices exist), then re-call setup()
+    // with a_append = true so subsequent writes continue from the pruned tail.
+    void prune_all(double a_restart_time)
+    {
+        if (procID() != 0) return;
+        for (const auto &surf : m_surfaces)
+            surf.prune(a_restart_time);
     }
 
     void hello() const
