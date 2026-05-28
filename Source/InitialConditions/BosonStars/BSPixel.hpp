@@ -18,6 +18,9 @@ struct BSPixel
     double phi_Im = 0.;
     double Pi     = 0.;
     double Pi_Im  = 0.;
+    // covariant partial_mu phi cartesian
+    double d_mu_phi[4] = {0., 0., 0., 0.};
+    double d_mu_phi_im[4] = {0., 0., 0., 0.};
 
     // Spatial metric (lower indices)
     double chi = 1.;
@@ -26,10 +29,40 @@ struct BSPixel
         {0., 1., 0.},
         {0., 0., 1.}
     };
+    double h[3][3] = {
+        {1., 0., 0.},
+        {0., 1., 0.},
+        {0., 0., 1.}
+    };
+
+    // normal vector
+    double nU[4] = {0., 0., 0., 0.};
+
+    // Lorentz rotation
+    // define X^mu = Lambda^mu_nu Y^nu
+    // where X and mu are lab frame, Y and nu are rest
+    // default no boost
+    double Lambda[4][4] = {
+        {1., 0., 0., 0.},
+        {0., 1., 0., 0.},
+        {0., 0., 1., 0.},
+        {0., 0., 0., 1.}
+    };
+    double Lambda_inv[4][4] = {
+        {1., 0., 0., 0.},
+        {0., 1., 0., 0.},
+        {0., 0., 1., 0.},
+        {0., 0., 0., 1.}
+    };
 
     // Extrinsic curvature (lower indices, symmetric)
     double trK = 0.;
     double K[3][3] = {
+        {0., 0., 0.},
+        {0., 0., 0.},
+        {0., 0., 0.}
+    };
+    double K_mixed[3][3] = {
         {0., 0., 0.},
         {0., 0., 0.},
         {0., 0., 0.}
@@ -72,6 +105,10 @@ struct BSPixel
         const double c_ = cosh(rapidity);
         const double s_ = sinh(rapidity);
         const double v_ = tanh(rapidity);
+        Lambda[0][0] = Lambda[1][1] = c_;
+        Lambda[0][1] = Lambda[1][0] = s_;
+        Lambda_inv[0][0] = Lambda_inv[1][1] = c_;
+        Lambda_inv[0][1] = Lambda_inv[1][0] = -s_;
 
 
         // Coordinates
@@ -80,7 +117,7 @@ struct BSPixel
         const double x_tilde = coords.x + 0.5 * direction * BSpp.binary_separation;
         const double t_tilde = 0.;
         // rest frame coords
-        const double x = c_ * x_tilde + s_ * t_tilde;
+        const double x = c_ * x_tilde - s_ * t_tilde;
         const double y = coords.y;
         const double z = 0.;
         const double t = c_ * t_tilde - s_ * x_tilde;
@@ -106,23 +143,52 @@ struct BSPixel
             pc_os = psi*psi*c_*c_ - omega*omega*s_*s_;
         }
 
-
         // analytic gauge vars
         lapse = omega * psi / sqrt(pc_os);
         shift_x = s_ * c_ * (psi*psi - omega*omega) / pc_os;
+        nU[0] = 1./lapse; 
+        nU[1] = - shift_x/lapse;
 
 
         // scalar feild output vars
         const double phase = BSpp.BS_phase * M_PI + w * t;
         phi    = p * cos(phase);
         phi_Im = p * sin(phase);
-        Pi    = -(1./lapse) * (
-                    (x_tilde/r) * (s_ - shift_x*c_) * dp * cos(phase)
-                               - w * (c_ - shift_x*s_) * p * sin(phase) );
-        Pi_Im = -(1./lapse) * (
-                    (x_tilde/r) * (s_ - shift_x*c_) * dp * sin(phase)
-                               + w * (c_ - shift_x*s_) * p * cos(phase) );
 
+        // rest frame cartesian derivs
+        // partial_t -> * i omega 
+        // partial_{x_i} -> * p'/p * x_i / r
+        d_mu_phi[0] = - w * sin(phase) * p;
+        d_mu_phi[1] = x / safe_r * cos(phase) * dp;
+        d_mu_phi[2] = y / safe_r * cos(phase) * dp;
+        d_mu_phi[3] = z / safe_r * cos(phase) * dp;
+        d_mu_phi_im[0] = w * cos(phase) * p;
+        d_mu_phi_im[1] = x / safe_r * sin(phase) * dp;
+        d_mu_phi_im[2] = y / safe_r * sin(phase) * dp;
+        d_mu_phi_im[3] = z / safe_r * sin(phase) * dp;
+
+
+        // scalar field momentum 
+
+        // // old Pi
+        // Pi    = -(1./lapse) * (
+        //             (x_tilde/r) * (s_ - shift_x*c_) * dp * cos(phase)
+        //                        - w * (c_ - shift_x*s_) * p * sin(phase) );
+        // Pi_Im = -(1./lapse) * (
+        //             (x_tilde/r) * (s_ - shift_x*c_) * dp * sin(phase)
+        //                        + w * (c_ - shift_x*s_) * p * cos(phase) );
+
+        // new Pi
+        Pi = Pi_Im = 0.;
+        for (size_t i = 0; i < 4; i++)
+        {
+            for (size_t j = 0; j < 4; j++)
+            {
+                Pi    += - nU[i] * Lambda_inv[i][j] * d_mu_phi[j];
+                Pi_Im += - nU[i] * Lambda_inv[i][j] * d_mu_phi_im[j];
+            }
+        }
+        
 
         // spatial metric
         gamma[0][0] = pc_os;
@@ -151,6 +217,13 @@ struct BSPixel
           trK += K[i][i] / gamma[i][i];
         }
 
+        // raise first index: K^i_j = gamma^{ii} K_{ij}  (diagonal metric)
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                K_mixed[i][j] = K[i][j] / gamma[i][i];
+                h[i][j] = gamma[i][j]*chi;
+            }
+        }
 
         // end * end * end * end * end * ------ //
     }

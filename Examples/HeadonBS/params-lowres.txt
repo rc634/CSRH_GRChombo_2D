@@ -18,10 +18,10 @@ plot_prefix = plt/Bosonp_
 checkpoint_interval = 100
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
-plot_interval = 10
+plot_interval = 1
 num_plot_vars = 8
 # plot_vars = phi phi_Im Weyl4_Re Weyl4_Im rho chi Ham Mom #Sxx Sxy Syy Sww S Sxx_TF Sxy_TF Syy_TF Sww_TF
-plot_vars = chi K lapse phi Ham N mod_phi Q
+plot_vars = chi K lapse phi Ham Mom N mod_phi
 
 # subpaths - specific directories for hdf5, pout, extraction data
 # (these are created at runtime)
@@ -254,7 +254,7 @@ RH_num_points = 32 64 64
 RH_time_step_freq = 4000 4000 
 RH_chase_speeds = 1 1 1 1 1 1
 RH_level = 1 1 1 1 1 1 1 1 1 1 1
-RH_start_times = -1.0 1.0 -1.0
+RH_start_times = -1.0 -1.0 -1.0
 
 # newton solver barely makes a difference, leave off for now
 RH_newton_crit = 0 0 0 0 0 0 0 0 0 0 0 
